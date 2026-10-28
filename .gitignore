@@ -30,3 +30,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Segredos locais nunca vão para o GitHub
+.env
+.env.*
+!.env.example
+*.pem
+*.key

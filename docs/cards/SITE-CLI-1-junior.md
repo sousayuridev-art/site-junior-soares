@@ -15,6 +15,12 @@
 - [x] Cache de até 5 min (req. 7). Mapa do site em `/sitemap.xml` (req. 8, ver pendência).
 - [x] Testes de leitura com banco, falha, demora, página não publicada, seção desconhecida e clique.
 
+## Revisão de segurança de 28/10 (card REV-4 no Hub)
+- [x] Dados estruturados com escape (texto de Ajustes não roda código no site).
+- [x] Cache em memória com teto de 200 entradas.
+- [x] Cabeçalhos: sem moldura em outro site, nosniff, referrer e permissões.
+- [x] Seção quebrada volta ao visual estático; `.env` ignorado; dependências de build atualizadas.
+
 ## Pendências
 - Hub: não há função pública que liste as páginas publicadas de um site; o mapa do site traz só "/". Precisa de card no Hub.
 - Hub: não há como trocar o domínio de um site depois de criado. Quando o domínio chegar, precisa de um ajuste no Hub (card) ou recadastrar o site.

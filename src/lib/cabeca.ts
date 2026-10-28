@@ -6,6 +6,20 @@ import type { Negocio } from "@/lib/negocio";
 import secoesCss from "../secoes.css?url";
 
 /**
+ * Dados estruturados dentro de <script>: o texto vem do painel (Ajustes), então "<", ">" e "&"
+ * viram escapes do JSON. Sem isso, um "</script>" na descrição fecharia o bloco e rodaria
+ * código no site (revisão de segurança de 28/10). O JSON continua o mesmo para o Google.
+ */
+export function jsonLdSeguro(dados: unknown): string {
+  return JSON.stringify(dados)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+/**
  * Título, descrição e dados estruturados de cada página. Na inicial, título e descrição vêm de
  * "Como aparece no Google" (Ajustes, no painel); nas páginas do Hub, do título da página.
  */
@@ -35,7 +49,7 @@ export function cabecaDaPagina(caminho: string, negocio: Negocio, pagina: Data |
         ? [
             {
               type: "application/ld+json",
-              children: JSON.stringify({
+              children: jsonLdSeguro({
                 "@context": "https://schema.org",
                 "@type": "SportsActivityLocation",
                 name: negocio.nome,

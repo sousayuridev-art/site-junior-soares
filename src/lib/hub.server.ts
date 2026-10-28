@@ -19,7 +19,26 @@ export type Fonte = "banco" | "reserva";
 type Entrada<T> = { valor: Promise<{ dado: T; fonte: Fonte }>; ate: number };
 type Opcoes = OpcoesBanco & { agora?: () => number };
 
+/**
+ * Teto de entradas: cada endereço inventado por um robô (/a1, /a2…) viraria uma entrada para
+ * sempre. Cheio, sai primeiro o que já venceu e, se precisar, o mais antigo (revisão de 28/10).
+ */
+export const MAX_ENTRADAS = 200;
 const caches = new Map<string, Entrada<unknown>>();
+export const tamanhoCacheHub = () => caches.size;
+
+function guardar(chave: string, e: Entrada<unknown>, agora: number) {
+  caches.delete(chave);
+  if (caches.size >= MAX_ENTRADAS) {
+    for (const [k, v] of caches) if (v.ate <= agora) caches.delete(k);
+    while (caches.size >= MAX_ENTRADAS) {
+      const maisAntiga = caches.keys().next().value;
+      if (maisAntiga === undefined) break;
+      caches.delete(maisAntiga);
+    }
+  }
+  caches.set(chave, e);
+}
 export function limparCacheHub() {
   caches.clear();
 }
@@ -33,7 +52,7 @@ async function comCache<T>(
   if (atual && atual.ate > agora()) return atual.valor;
   // Enquanto a busca corre, pedidos iguais esperam a mesma promessa.
   const entrada: Entrada<T> = { valor: produzir(), ate: agora() + CACHE_MS };
-  caches.set(chave, entrada as Entrada<unknown>);
+  guardar(chave, entrada as Entrada<unknown>, agora());
   const r = await entrada.valor;
   entrada.ate = agora() + (r.fonte === "banco" ? CACHE_MS : CACHE_RESERVA_MS);
   return r;
