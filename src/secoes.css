@@ -1,0 +1,3 @@
+/* Estilos das seções do Hub (pacote src/secoes, Tailwind). Só nas páginas publicadas pelo painel. */
+@import "tailwindcss";
+@source "./secoes";
